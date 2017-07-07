@@ -211,7 +211,7 @@ class ExtendedAudioFileConvertOperation: Operation {
             size = UInt32(MemoryLayout.stride(ofValue: canResume))
             //### `converter` is nil, in case of LPCM.
             if let converter = converter {
-                error = AudioConverterGetProperty(unsafeBitCast(converter, to: AudioConverterRef.self), kAudioConverterPropertyCanResumeFromInterruption, &size, &canResume)
+                error = AudioConverterGetProperty(converter, kAudioConverterPropertyCanResumeFromInterruption, &size, &canResume)
             } else {
                 //### Original Objective-C code expects `kAudio_ParamError` when `converter` is nil.
                 error = kAudio_ParamError
