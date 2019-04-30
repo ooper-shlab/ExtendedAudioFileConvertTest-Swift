@@ -74,12 +74,12 @@ class ExtendedAudioFileConvertOperation: Operation {
         
         super.init()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(handleAudioSessionInterruptionNotification), name: .AVAudioSessionInterruption, object: AVAudioSession.sharedInstance())
+        NotificationCenter.default.addObserver(self, selector: #selector(handleAudioSessionInterruptionNotification), name: AVAudioSession.interruptionNotification, object: AVAudioSession.sharedInstance())
         
     }
     
     deinit {
-        NotificationCenter.default.removeObserver(self, name: .AVAudioSessionInterruption, object: AVAudioSession.sharedInstance())
+        NotificationCenter.default.removeObserver(self, name: AVAudioSession.interruptionNotification, object: AVAudioSession.sharedInstance())
     }
     
     override func main() {
@@ -248,7 +248,7 @@ class ExtendedAudioFileConvertOperation: Operation {
             // Setup buffers
             let bufferByteSize = 32768
             var sourceBuffer = UnsafeMutablePointer<CChar>.allocate(capacity: bufferByteSize)
-            defer {sourceBuffer.deallocate(capacity: bufferByteSize)}
+            defer {sourceBuffer.deallocate()}
             
             /*
              keep track of the source file offset so we know where to reset the source for
@@ -381,8 +381,8 @@ class ExtendedAudioFileConvertOperation: Operation {
     
     // MARK: Notification Handlers.
     
-    func handleAudioSessionInterruptionNotification(_ notification: NSNotification) {
-        let interruptionType = AVAudioSessionInterruptionType(rawValue: notification.userInfo![AVAudioSessionInterruptionTypeKey] as! UInt)!
+    @objc func handleAudioSessionInterruptionNotification(_ notification: NSNotification) {
+        let interruptionType = AVAudioSession.InterruptionType(rawValue: notification.userInfo![AVAudioSessionInterruptionTypeKey] as! UInt)!
         
         print("Session interrupted > --- \(interruptionType == .began ? "Begin Interruption" : "End Interruption") ---")
         
